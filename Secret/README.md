@@ -6,6 +6,7 @@ Used to store secret data (credentials, API keys and passwords)
 
 ### create "secret" by using kubectl ###
 kubectl create secret tls tls-secret --cert=path/to/tls.crt --key=path/to/tls.key
+
 kubectl create secret generic mysql --from-literal=password=root
 
 ---
