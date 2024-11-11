@@ -1,0 +1,1 @@
+Used to store secret data (credentials, API keys and passwords)
