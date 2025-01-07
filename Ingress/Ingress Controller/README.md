@@ -133,5 +133,3 @@ spec:
    - Specify a Kubernetes `Secret` for TLS termination.
 
 ---
-
-Let me know if you'd like to expand on any section or need help deploying these configurations!
