@@ -24,7 +24,7 @@ curl -LO "https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl"
 sudo install kubectl /usr/bin/kubectl
 
 # start minikube
-minikube start --driver=docker
+minikube start --driver=docker --force
 
 # Configure Permissions for kubectl
 sudo chown -R $USER:$USER $HOME/.kube $HOME/.minikube
