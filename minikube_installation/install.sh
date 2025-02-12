@@ -42,7 +42,7 @@ chown_minikube(){
 #avoid minikube meet Error caching kubectl: failed to acquire lock
 Disable_File_System_Protection () {
 	sudo sysctl fs.protected_regular=0 > /dev/null 2>&1
- 	echo "Disable_File_System_Protection"
+ 	echo "Disable_File_System_Protection done~"
 }
 
 yum_update
