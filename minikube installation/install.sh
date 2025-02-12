@@ -39,6 +39,12 @@ chown_minikube(){
 	echo "chown minikube done~"
 }
 
+#avoid minikube meet Error caching kubectl: failed to acquire lock
+Disable_File_System_Protection () {
+	sudo sysctl fs.protected_regular=0 > /dev/null 2>&1
+ 	echo "Disable_File_System_Protection"
+}
+
 yum_update
 install_tools
 install_docker
@@ -47,5 +53,6 @@ minikube
 kubectl
 start_minikube
 chown_minikube
+Disable_File_System_Protection
 
 exit
