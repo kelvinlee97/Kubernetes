@@ -46,6 +46,11 @@ chown_minikube(){
 	echo "chown minikube done~"
 }
 
+kubectl_autocomplete(){
+	echo 'source <(kubectl completion bash)' >>~/.bashrc
+ 	source ~/.bashrc
+}
+
 yum_update
 install_tools
 install_docker
@@ -55,5 +60,6 @@ kubectl
 Disable_File_System_Protection
 start_minikube
 chown_minikube
+kubectl_autocomplete
 
 exit
