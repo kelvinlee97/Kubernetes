@@ -25,8 +25,8 @@ minikube() {
 	echo "minikube done~"
 }	
 kubectl() {
-	curl -LO "https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl" > /dev/null 2>&1
-	sudo install kubectl /usr/bin/kubectl > /dev/null 2>&1
+	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" > /dev/null 2>&1
+	sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl > /dev/null 2>&1
 	echo "kubectl done~"
 }
 
