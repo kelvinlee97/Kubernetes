@@ -48,7 +48,7 @@ chown_minikube(){
 
 kubectl_autocomplete(){
 	sudo echo 'source <(kubectl completion bash)' >> ~/.bashrc
- 	sudo source ~/.bashrc
+ 	source ~/.bashrc
   	echo "kubectl autocomplete done"
 }
 
