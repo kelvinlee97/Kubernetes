@@ -47,8 +47,9 @@ chown_minikube(){
 }
 
 kubectl_autocomplete(){
-	echo 'source <(kubectl completion bash)' >>~/.bashrc
- 	source ~/.bashrc
+	echo 'source <(kubectl completion bash)' >> ~/.bashrc > /dev/null 2>&1
+ 	source ~/.bashrc > /dev/null 2>&1
+  	echo "kubectl autocomplete done"
 }
 
 yum_update
