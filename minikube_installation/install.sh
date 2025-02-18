@@ -26,7 +26,7 @@ minikube() {
 }	
 kubectl() {
 	curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" > /dev/null 2>&1
-	sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl > /dev/null 2>&1
+	sudo install -o root -g root -m 0755 kubectl /usr/bin/kubectl > /dev/null 2>&1
 	echo "kubectl done~"
 }
 
@@ -37,7 +37,7 @@ Disable_File_System_Protection () {
 }
 
 start_minikube(){
-	minikube start --driver=docker --force > /dev/null 2>&1
+	sudo minikube start --driver=docker --force > /dev/null 2>&1
 	echo "start minikube done~"
 }
 
@@ -47,8 +47,8 @@ chown_minikube(){
 }
 
 kubectl_autocomplete(){
-	echo 'source <(kubectl completion bash)' >> ~/.bashrc > /dev/null 2>&1
- 	source ~/.bashrc > /dev/null 2>&1
+	sudo echo 'source <(kubectl completion bash)' >> ~/.bashrc
+ 	sudo source ~/.bashrc
   	echo "kubectl autocomplete done"
 }
 
