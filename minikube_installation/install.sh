@@ -47,7 +47,7 @@ chown_minikube(){
 }
 
 kubectl_autocomplete(){
-	sudo echo 'source <(kubectl completion bash)' >> ~/.bashrc > /dev/null 2>&1
+	echo 'source <(sudo kubectl completion bash)' >> ~/.bashrc
  	source ~/.bashrc
   	echo "kubectl autocomplete done"
 }
@@ -59,8 +59,8 @@ docker_user
 minikube
 kubectl
 Disable_File_System_Protection
+kubectl_autocomplete
 start_minikube
 chown_minikube
-kubectl_autocomplete
 
 exit
