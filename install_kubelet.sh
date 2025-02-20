@@ -1,6 +1,6 @@
 #!/bin/bash
-curl -LO "https://dl.k8s.io/release/$(curl -sSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubelet"
 
+curl -LO "https://dl.k8s.io/release/$(curl -sSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubelet"
 chmod +x kubelet
 sudo mv kubelet /usr/bin/
 
@@ -11,7 +11,7 @@ Documentation=https://kubernetes.io/docs/home/
 After=network-online.target
 
 [Service]
-ExecStart=/usr/local/bin/kubelet
+ExecStart=/usr/bin/kubelet
 Restart=always
 StartLimitInterval=0
 RestartSec=10
