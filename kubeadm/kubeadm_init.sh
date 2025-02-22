@@ -19,24 +19,18 @@ sudo systemctl enable --now kubelet
 sudo apt install containerd -y
 sudo mkdir -p /etc/containerd/
 containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sudo tee /etc/containerd/config.toml
+sudo systemctl restart containerd.service
 # Verify SystemCgroup
 # cat /etc/containerd/config.toml |grep -i SystemdCgroup
-sudo systemctl restart containerd.service
 
-# Enable IP Forwarding
-sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
-net.ipv4.ip_forward=1
-net.bridge.bridge-nf-call-iptables=1
-net.bridge.bridge-nf-call-ip6tables=1
-net.bridge.bridge-nf-call-iptables=1
-net.bridge.bridge-nf-call-ip6tables=1
-net.ipv4.ip_forward=1
+# sysctl params required by setup, params persist across reboots
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.ipv4.ip_forward = 1
 EOF
 
+# Apply sysctl params without reboot
 sudo sysctl --system
-sudo systemctl restart kubelet
-# Verify ip forwarding
-# cat /proc/sys/net/ipv4/ip_forward
+sysctl net.ipv4.ip_forward
 
 sudo kubeadm init --apiserver-advertise-address $myaddr --pod-network-cidr "$mypodcidr" --upload-certs > /tmp/kubeadm_output.txt
 
