@@ -1,31 +1,52 @@
-!/bin/bash
+#!/bin/bash
 
-# Follow with this instruction
-## https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+# this actions will be suit on Debian OS
 
-yum update -y
+myaddr="10.0.1.169"
+mypodcidr="10.0.2.0/24"
 
-# Set SELinux in permissive mode (effectively disabling it)
-sudo setenforce 0
-sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
-
-# Install containerd
-yum install containerd -y
-
-# This overwrites any existing configuration in /etc/yum.repos.d/kubernetes.repo
-cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://pkgs.k8s.io/core:/stable:/v1.32/rpm/
-enabled=1
-gpgcheck=1
-gpgkey=https://pkgs.k8s.io/core:/stable:/v1.32/rpm/repodata/repomd.xml.key
-exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
-EOF
-
-sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
-
+# init + kudeadm kubelet kubectl
+sudo apt-get update -y
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update -y
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 
-# check kubeadm status
-# kubeadm version
+# install containerd
+sudo apt install containerd -y
+sudo mkdir -p /etc/containerd/
+containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sudo tee /etc/containerd/config.toml
+# Verify SystemCgroup
+# cat /etc/containerd/config.toml |grep -i SystemdCgroup
+sudo systemctl restart containerd.service
+
+# Enable IP Forwarding
+sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
+net.ipv4.ip_forward=1
+net.bridge.bridge-nf-call-iptables=1
+net.bridge.bridge-nf-call-ip6tables=1
+net.bridge.bridge-nf-call-iptables=1
+net.bridge.bridge-nf-call-ip6tables=1
+net.ipv4.ip_forward=1
+EOF
+
+sudo sysctl --system
+sudo systemctl restart kubelet
+# Verify ip forwarding
+# cat /proc/sys/net/ipv4/ip_forward
+
+sudo kubeadm init --apiserver-advertise-address $myaddr --pod-network-cidr "$mypodcidr" --upload-certs > /tmp/kubeadm_output.txt
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# install network plugin(Calico)
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+# kubectl auto-completion
+echo 'source <(sudo kubectl completion bash)' >> ~/.bashrc
+source ~/.bashrc
