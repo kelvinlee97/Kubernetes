@@ -20,17 +20,16 @@ sudo apt install containerd -y
 sudo mkdir -p /etc/containerd/
 containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sudo tee /etc/containerd/config.toml
 sudo systemctl restart containerd.service
-# Verify SystemCgroup
-# cat /etc/containerd/config.toml |grep -i SystemdCgroup
 
-# sysctl params required by setup, params persist across reboots
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.ipv4.ip_forward = 1
+# Enable IP Forwarding and iptable bridge
+sudo tee /etc/sysctl.d/kubernetes.conf <<EOF
+net.ipv4.ip_forward=1
+net.bridge.bridge-nf-call-iptables=1
 EOF
 
-# Apply sysctl params without reboot
 sudo sysctl --system
 sysctl net.ipv4.ip_forward
+sysctl net.bridge.bridge-nf-call-iptables
 
 sudo kubeadm init --apiserver-advertise-address $myaddr --pod-network-cidr "$mypodcidr" --upload-certs > /tmp/kubeadm_output.txt
 
@@ -39,7 +38,8 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 # install network plugin(Calico)
-kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+wget https://docs.projectcalico.org/manifests/calico.yaml
+kubectl apply -f calico.yaml
 
 # kubectl auto-completion
 echo 'source <(sudo kubectl completion bash)' >> ~/.bashrc
