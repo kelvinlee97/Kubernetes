@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# this actions will be suit on Debian OS
+# this actions will be suit on Debian OS(Ubuntu)
 
-myaddr="10.0.1.169"
-mypodcidr="10.0.2.0/24"
+MyInternalIp="10.0.1.223"
+MyPodCIDR="10.0.2.0/24"
 
-# init + kudeadm kubelet kubectl
+# regular update and install tools need
 sudo apt-get update -y
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+
+# install kubelet kubeadm kubectl with v1.32 version
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update -y
@@ -31,15 +33,16 @@ sudo sysctl --system
 sysctl net.ipv4.ip_forward
 sysctl net.bridge.bridge-nf-call-iptables
 
-sudo kubeadm init --apiserver-advertise-address $myaddr --pod-network-cidr "$mypodcidr" --upload-certs > /tmp/kubeadm_output.txt
+# initialize kubeadm master 
+sudo kubeadm init --apiserver-advertise-address $MyInternalIp --pod-network-cidr "$MyPodCIDR" --upload-certs > /tmp/kubeadm_output.txt
 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 # install network plugin(Calico)
-wget https://docs.projectcalico.org/manifests/calico.yaml
-kubectl apply -f calico.yaml
+sudo wget https://docs.projectcalico.org/manifests/calico.yaml
+sudo kubectl apply -f calico.yaml
 
 # kubectl auto-completion
 echo 'source <(sudo kubectl completion bash)' >> ~/.bashrc
