@@ -4,14 +4,15 @@
 
 MyInternalIp="10.0.1.223"
 MyPodCIDR="10.0.2.0/24"
+K8sVersion="v1.32"
 
 # regular update and install tools need
 sudo apt-get update -y
 sudo apt-get install -y apt-transport-https ca-certificates curl gpg
 
 # install kubelet kubeadm kubectl with v1.32 version
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+curl -fsSL https://pkgs.k8s.io/core:/stable:/$K8sVersion/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/$K8sVersion/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update -y
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
@@ -40,9 +41,10 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-# install network plugin(Calico)
-sudo wget https://docs.projectcalico.org/manifests/calico.yaml
-sudo kubectl apply -f calico.yaml
+# install network plugin(flannel)
+cd /etc/kubernetes/manifests/
+sudo wget https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+sudo kubectl apply -f /etc/kubernetes/manifests/kube-flannel.yml --validate=false
 
 # kubectl auto-completion
 echo 'source <(sudo kubectl completion bash)' >> ~/.bashrc
