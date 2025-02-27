@@ -33,7 +33,7 @@ mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 cd /etc/kubernetes/manifests/
-sudo wget https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-kubectl apply -f kube-flannel.yml
+sudo wget https://docs.projectcalico.org/manifests/calico.yaml
+kubectl apply -f calico.yaml
 source <(kubectl completion bash)
 # kubeadm token create --print-join-command
