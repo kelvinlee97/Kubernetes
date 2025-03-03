@@ -1,6 +1,7 @@
 #!/bin/bash
 
 sudo apt update && sudo apt upgrade -y
+sudo apt install net-tools
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab
 sudo modprobe overlay
